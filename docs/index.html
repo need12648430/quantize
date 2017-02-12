@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Quantize</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <h1 id="quantize">Quantize</h1>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Quantize is a tiny, but fast color quantization library; it’s smaller, and
+twice the speed of ColorThief (with more features, to boot) in Chrome.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-comment">/*
+Copyright (c) 2017 Jahn Johansen
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/</span>
+
+<span class="hljs-keyword">var</span> Quantize = (<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+<span class="hljs-meta">	"use strict"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h2 id="quantize">Quantize</h2>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>This is the Quantize class. It takes an <code>Object</code> of settings as an argument.
+There are simple presets you can pass in defined later. If no settings are
+supplied, it defaults to a 5-bit modified median cut.</p>
+<p>Possible settings:</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Quantize</span> (<span class="hljs-params">settings</span>) </span>{
+		<span class="hljs-keyword">this</span>.settings = settings || {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p><code>histogramPrecision</code> is a 3-element array defining the precision (in bits)
+of each channel (R, G, and B).</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			histogramPrecision: [<span class="hljs-number">5</span>, <span class="hljs-number">5</span>, <span class="hljs-number">5</span>],</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p><code>fractByPopulace</code> is used with <code>Quantize.CutType.Leptonica</code> to determine
+when to swich methods.
+e.g. for 0.75 after 75% of the desired colors are acquired, it will
+switch from a volume-based cut order to a population-based cut order.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			fractByPopulace: <span class="hljs-number">0.75</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p><code>cutType</code> defines how the bounding box is partitioned. Its values are defined below.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			cutType: CutType.ModifiedMedian,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p><code>cutOrder</code> defines the order in which bounding boxes are partitioned. Its
+values are defined below.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>			cutOrder: CutOrder.Leptonica
+		};
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <h3 id="quantize-cuttype">Quantize.CutType</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>‘enum’ of bounding box slicing strategies.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> CutType = Quantize.CutType = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p><code>Quantize.CutType.Median</code> is the basic median cut strategy. It cuts along
+the median of the longest axis (R, G, or B) of the histogram.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		Median: <span class="hljs-number">1</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p><code>Quantize.CutType.ModifiedMedian</code> is a median cut with an offset. Its goal
+is to better isolate ‘unique’ colors (rather than averages) by fragmenting
+less proportionately.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		ModifiedMedian: <span class="hljs-number">2</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p><code>Quantize.CutType.Volume</code> simply cuts the longest axis in half.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		Volume: <span class="hljs-number">3</span>
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <h3 id="quantize-cutorder">Quantize.CutOrder</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>‘enum’ of cut order strategies.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> CutOrder = Quantize.CutOrder = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p><code>Quantize.CutType.JFIF</code> is the cut order used to compress standard-compliant
+JPEG images.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		JFIF: <span class="hljs-number">1</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p><code>Quantize.CutType.Leptonica</code> uses both volume and populace sequentially
+to decide the partition order.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		Leptonica: <span class="hljs-number">2</span>,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p><code>Quantize.CutType.Subdivide</code> splits <em>all</em> boxes until the desired number
+of colors (or greater) is achieved.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		Subdivide: <span class="hljs-number">3</span>
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <h2 id="comparitors">Comparitors</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <p>Private. Comparitors used by <code>Quantize.CutOrder</code> enums to decide which
+bounding box to partition next.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">var</span> Comparitor = {
+		<span class="hljs-attr">Population</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">a, b</span>) </span>{
+			<span class="hljs-keyword">return</span> a.population() - b.population();
+		},
+		<span class="hljs-attr">Volume</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">a, b</span>) </span>{
+			<span class="hljs-keyword">return</span> a.volume() - b.volume();
+		},
+		<span class="hljs-attr">PopulationVolume</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">a, b</span>) </span>{
+			<span class="hljs-keyword">return</span> a.population() * a.volume() - b.population() * b.volume();
+		},
+		<span class="hljs-attr">InversePopulation</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">a, b</span>) </span>{
+			<span class="hljs-keyword">return</span> b.population() - a.population();
+		}
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <h3 id="quantize-preset">Quantize.Preset</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p>A collection of quantization strategy presets you can pass to the <code>Quantize</code>
+constructor.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	Quantize.Preset = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p><code>Quantize.Preset.ColorThief</code> is the Color Thief quantization strategy.
+It’s the modified median cut.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		ColorThief: {
+			<span class="hljs-attr">histogramPrecision</span>: [<span class="hljs-number">5</span>, <span class="hljs-number">5</span>, <span class="hljs-number">5</span>],
+			<span class="hljs-attr">fractByPopulace</span>: <span class="hljs-number">0.75</span>,
+			<span class="hljs-attr">cutType</span>: CutType.ModifiedMedian,
+			<span class="hljs-attr">cutOrder</span>: CutOrder.Leptonica
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p><code>Quantize.Preset.JFIF</code> is the standard quantization strategy used when
+compressing JPEG images.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		JFIF: {
+			<span class="hljs-attr">histogramPrecision</span>: [<span class="hljs-number">5</span>, <span class="hljs-number">5</span>, <span class="hljs-number">5</span>],
+			<span class="hljs-attr">cutType</span>: CutType.Volume,
+			<span class="hljs-attr">cutOrder</span>: CutOrder.JFIF
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p><code>Quantize.Preset.MedianCut</code> is the basic median cut strategy.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		MedianCut: {
+			<span class="hljs-attr">histogramPrecision</span>: [<span class="hljs-number">5</span>, <span class="hljs-number">5</span>, <span class="hljs-number">5</span>],
+			<span class="hljs-attr">cutType</span>: CutType.Median,
+			<span class="hljs-attr">cutOrder</span>: CutOrder.Subdivide
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p><code>Quantize.Preset.Fast</code> is a modified median cut with a less precise
+histogram.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		Fast: {
+			<span class="hljs-attr">histogramPrecision</span>: [<span class="hljs-number">3</span>, <span class="hljs-number">3</span>, <span class="hljs-number">3</span>],
+			<span class="hljs-attr">fractByPopulace</span>: <span class="hljs-number">0.75</span>,
+			<span class="hljs-attr">cutType</span>: CutType.ModifiedMedian,
+			<span class="hljs-attr">cutOrder</span>: CutOrder.Leptonica
+		}
+	};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <h2 id="histogram">Histogram</h2>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p>This is the Histogram class used by Quantize. It takes the Quantize
+instance as its argument to pull its settings.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Histogram</span>(<span class="hljs-params">quantize</span>) </span>{
+		<span class="hljs-keyword">this</span>.precision = quantize.settings.histogramPrecision;
+
+		<span class="hljs-keyword">this</span>.shrink = [
+			<span class="hljs-number">8</span> - <span class="hljs-keyword">this</span>.precision[<span class="hljs-number">0</span>],
+			<span class="hljs-number">8</span> - <span class="hljs-keyword">this</span>.precision[<span class="hljs-number">1</span>],
+			<span class="hljs-number">8</span> - <span class="hljs-keyword">this</span>.precision[<span class="hljs-number">2</span>]
+		];
+		<span class="hljs-keyword">this</span>.grow = [
+			<span class="hljs-number">1</span> &lt;&lt; <span class="hljs-keyword">this</span>.shrink[<span class="hljs-number">0</span>],
+			<span class="hljs-number">1</span> &lt;&lt; <span class="hljs-keyword">this</span>.shrink[<span class="hljs-number">1</span>],
+			<span class="hljs-number">1</span> &lt;&lt; <span class="hljs-keyword">this</span>.shrink[<span class="hljs-number">2</span>]
+		];
+		<span class="hljs-keyword">this</span>.mask = [
+			(<span class="hljs-number">1</span> &lt;&lt; <span class="hljs-keyword">this</span>.precision[<span class="hljs-number">0</span>]) - <span class="hljs-number">1</span>,
+			(<span class="hljs-number">1</span> &lt;&lt; <span class="hljs-keyword">this</span>.precision[<span class="hljs-number">1</span>]) - <span class="hljs-number">1</span>,
+			(<span class="hljs-number">1</span> &lt;&lt; <span class="hljs-keyword">this</span>.precision[<span class="hljs-number">2</span>]) - <span class="hljs-number">1</span>
+		];
+
+		<span class="hljs-keyword">this</span>.bounds = {
+			<span class="hljs-attr">r</span>: {
+				<span class="hljs-attr">min</span>: <span class="hljs-number">0</span>,
+				<span class="hljs-attr">max</span>: <span class="hljs-keyword">this</span>.mask[<span class="hljs-number">0</span>]
+			},
+			<span class="hljs-attr">g</span>: {
+				<span class="hljs-attr">min</span>: <span class="hljs-number">0</span>,
+				<span class="hljs-attr">max</span>: <span class="hljs-keyword">this</span>.mask[<span class="hljs-number">1</span>]
+			},
+			<span class="hljs-attr">b</span>: {
+				<span class="hljs-attr">min</span>: <span class="hljs-number">0</span>,
+				<span class="hljs-attr">max</span>: <span class="hljs-keyword">this</span>.mask[<span class="hljs-number">2</span>]
+			}
+		};
+
+		<span class="hljs-keyword">this</span>.data = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(<span class="hljs-keyword">this</span>.mask[<span class="hljs-number">0</span>] * <span class="hljs-keyword">this</span>.mask[<span class="hljs-number">1</span>] * <span class="hljs-keyword">this</span>.mask[<span class="hljs-number">2</span>]);
+	}
+
+	Histogram.prototype = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <h3 id="histogram-populate-imagedata-">Histogram.populate (imageData)</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p>Takes an <code>ImageData</code> object as its argument, and populates itself with
+its colors.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		populate: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">imageData</span>) </span>{
+			<span class="hljs-keyword">var</span> bounds = <span class="hljs-keyword">this</span>.bounds, r, g, b, index;
+
+			<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; imageData.data.length; i += <span class="hljs-number">4</span>) {
+				<span class="hljs-keyword">if</span> (imageData.data[i + <span class="hljs-number">3</span>] &lt; <span class="hljs-number">128</span>) <span class="hljs-keyword">continue</span>;
+
+				r = imageData.data[i] &gt;&gt; <span class="hljs-keyword">this</span>.shrink[<span class="hljs-number">0</span>];
+				g = imageData.data[i + <span class="hljs-number">1</span>] &gt;&gt; <span class="hljs-keyword">this</span>.shrink[<span class="hljs-number">1</span>];
+				b = imageData.data[i + <span class="hljs-number">2</span>] &gt;&gt; <span class="hljs-keyword">this</span>.shrink[<span class="hljs-number">2</span>];
+
+				bounds.r.min = r &lt; bounds.r.min ? r : bounds.r.min;
+				bounds.g.min = g &lt; bounds.g.min ? g : bounds.g.min;
+				bounds.b.min = b &lt; bounds.b.min ? b : bounds.b.min;
+				bounds.r.max = r &gt; bounds.r.max ? r : bounds.r.max;
+				bounds.g.max = g &gt; bounds.g.max ? g : bounds.g.max;
+				bounds.b.max = b &gt; bounds.b.max ? r : bounds.b.max;
+
+				index = <span class="hljs-keyword">this</span>.index(r, g, b);
+				<span class="hljs-keyword">this</span>.data[index] = (<span class="hljs-keyword">this</span>.data[index] || <span class="hljs-number">0</span>) + <span class="hljs-number">1</span>;
+			}
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <h3 id="histogram-index-r-g-b-">Histogram.index (r, g, b)</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <p>A convenience function to map an RGB color to an index in the Histogram
+instance’s internal array.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		index: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">r, g, b</span>) </span>{
+			<span class="hljs-keyword">return</span> ((r &amp; <span class="hljs-keyword">this</span>.mask[<span class="hljs-number">0</span>]) &lt;&lt; (<span class="hljs-keyword">this</span>.precision[<span class="hljs-number">0</span>] + <span class="hljs-keyword">this</span>.precision[<span class="hljs-number">1</span>])) |
+				((g &amp; <span class="hljs-keyword">this</span>.mask[<span class="hljs-number">1</span>]) &lt;&lt; <span class="hljs-keyword">this</span>.precision[<span class="hljs-number">1</span>]) |
+				(b &amp; <span class="hljs-keyword">this</span>.mask[<span class="hljs-number">2</span>]);
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <h3 id="histogram-average-bounds-">Histogram.average (bounds)</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p>Calculates the average color within a given bounding box <code>Box</code> object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		average: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">bounds</span>) </span>{
+			bounds = <span class="hljs-keyword">typeof</span> bounds === <span class="hljs-string">"undefined"</span> ? <span class="hljs-keyword">this</span>.bounds : bounds;
+
+			<span class="hljs-keyword">var</span> r, g, b, value;
+			<span class="hljs-keyword">var</span> rsum = <span class="hljs-number">0</span>, bsum = <span class="hljs-number">0</span>, gsum = <span class="hljs-number">0</span>, sum = <span class="hljs-number">0</span>;
+
+			<span class="hljs-keyword">for</span> (r = bounds.r.min; r &lt;= bounds.r.max; r++) {
+				<span class="hljs-keyword">for</span> (g = bounds.g.min; g &lt;= bounds.g.max; g++) {
+					<span class="hljs-keyword">for</span> (b = bounds.b.min; b &lt;= bounds.b.max; b++) {
+						value = <span class="hljs-keyword">this</span>.data[<span class="hljs-keyword">this</span>.index(r, g, b)] || <span class="hljs-number">0</span>;
+
+						rsum += (r + <span class="hljs-number">0.5</span>) * <span class="hljs-keyword">this</span>.grow[<span class="hljs-number">0</span>] * value;
+						gsum += (g + <span class="hljs-number">0.5</span>) * <span class="hljs-keyword">this</span>.grow[<span class="hljs-number">1</span>] * value;
+						bsum += (b + <span class="hljs-number">0.5</span>) * <span class="hljs-keyword">this</span>.grow[<span class="hljs-number">2</span>] * value;
+
+						sum += value;
+					}
+				}
+			}
+
+			<span class="hljs-keyword">return</span> [~~(rsum / sum), ~~(gsum / sum), ~~(bsum / sum)];
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <h3 id="histogram-population-bounds-">Histogram.population (bounds)</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <p>Calculates the population within a given bounding box <code>Box</code> object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		population: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">bounds</span>) </span>{
+			bounds = <span class="hljs-keyword">typeof</span> bounds === <span class="hljs-string">"undefined"</span> ? <span class="hljs-keyword">this</span>.bounds : bounds;
+
+			<span class="hljs-keyword">var</span> r, g, b;
+			<span class="hljs-keyword">var</span> sum = <span class="hljs-number">0</span>;
+
+			<span class="hljs-keyword">for</span> (r = bounds.r.min; r &lt;= bounds.r.max; r++) {
+				<span class="hljs-keyword">for</span> (g = bounds.g.min; g &lt;= bounds.g.max; g++) {
+					<span class="hljs-keyword">for</span> (b = bounds.b.min; b &lt;= bounds.b.max; b++) {
+						sum += <span class="hljs-keyword">this</span>.data[<span class="hljs-keyword">this</span>.index(r, g, b)] || <span class="hljs-number">0</span>;
+					}
+				}
+			}
+
+			<span class="hljs-keyword">return</span> sum;
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <h3 id="histogram-population-bounds-">Histogram.population (bounds)</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p>Calculates the smallest bounds that can contain colors in bounding box
+<code>Box.</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		trim: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">bounds</span>) </span>{
+			bounds = <span class="hljs-keyword">typeof</span> bounds === <span class="hljs-string">"undefined"</span> ? <span class="hljs-keyword">this</span>.bounds : bounds;
+
+			<span class="hljs-keyword">var</span> r, g, b, value;
+
+			<span class="hljs-keyword">var</span> trimmed = {
+				<span class="hljs-attr">r</span>: {
+					<span class="hljs-attr">min</span>: <span class="hljs-keyword">this</span>.mask[<span class="hljs-number">0</span>] + <span class="hljs-number">1</span>,
+					<span class="hljs-attr">max</span>: <span class="hljs-number">-1</span>
+				},
+				<span class="hljs-attr">g</span>: {
+					<span class="hljs-attr">min</span>: <span class="hljs-keyword">this</span>.mask[<span class="hljs-number">1</span>] + <span class="hljs-number">1</span>,
+					<span class="hljs-attr">max</span>: <span class="hljs-number">-1</span>
+				},
+				<span class="hljs-attr">b</span>: {
+					<span class="hljs-attr">min</span>: <span class="hljs-keyword">this</span>.mask[<span class="hljs-number">2</span>] + <span class="hljs-number">1</span>,
+					<span class="hljs-attr">max</span>: <span class="hljs-number">-1</span>
+				}
+			};
+
+			<span class="hljs-keyword">for</span> (r = bounds.r.min; r &lt;= bounds.r.max; r++) {
+				<span class="hljs-keyword">for</span> (g = bounds.g.min; g &lt;= bounds.g.max; g++) {
+					<span class="hljs-keyword">for</span> (b = bounds.b.min; b &lt;= bounds.b.max; b++) {
+						value = <span class="hljs-keyword">this</span>.data[<span class="hljs-keyword">this</span>.index(r, g, b)] || <span class="hljs-number">0</span>;
+
+						<span class="hljs-keyword">if</span> (value) {
+							trimmed.r.min = <span class="hljs-built_in">Math</span>.min(trimmed.r.min, r);
+							trimmed.r.max = <span class="hljs-built_in">Math</span>.max(trimmed.r.max, r);
+							trimmed.g.min = <span class="hljs-built_in">Math</span>.min(trimmed.g.min, g);
+							trimmed.g.max = <span class="hljs-built_in">Math</span>.max(trimmed.g.max, g);
+							trimmed.b.min = <span class="hljs-built_in">Math</span>.min(trimmed.b.min, b);
+							trimmed.b.max = <span class="hljs-built_in">Math</span>.max(trimmed.b.max, b);
+						}
+					}
+				}
+			}
+
+			<span class="hljs-keyword">return</span> trimmed;
+		}
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <h2 id="box">Box</h2>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <p>This is the bounding Box class used by Quantize. It represents a subset of the
+Histogram. It takes the Quantize instance, Histogram instance, and a set of
+boundaries as its argument.</p>
+<p>Boundaries are just a JavaScript Object of the form:</p>
+<p><code>{
+    r: { min: 0, max: 255 },
+    g: { min: 0, max: 255 },
+    b: { min: 0, max: 255 }
+}</code></p>
+<p>It’s also responsible for naively memoizing Histogram queries.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Box</span>(<span class="hljs-params">quantize, histogram, bounds</span>) </span>{
+		<span class="hljs-keyword">this</span>.quantize = quantize;
+		<span class="hljs-keyword">this</span>.histogram = histogram;
+		<span class="hljs-keyword">this</span>.bounds = <span class="hljs-keyword">typeof</span> bounds !== <span class="hljs-string">"undefined"</span> ? bounds : histogram.bounds;
+		<span class="hljs-keyword">this</span>.memo = {
+			<span class="hljs-attr">populace</span>: <span class="hljs-literal">null</span>,
+			<span class="hljs-attr">color</span>: <span class="hljs-literal">null</span>
+		}
+	}
+
+	Box.prototype = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <h3 id="box-clone-">Box.clone ()</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <p>Clones this box. Objects pass by reference otherwise.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		clone: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Box(<span class="hljs-keyword">this</span>.quantize, <span class="hljs-keyword">this</span>.histogram, {
+				<span class="hljs-attr">r</span>: {
+					<span class="hljs-attr">min</span>: <span class="hljs-keyword">this</span>.bounds.r.min,
+					<span class="hljs-attr">max</span>: <span class="hljs-keyword">this</span>.bounds.r.max
+				},
+				<span class="hljs-attr">g</span>: {
+					<span class="hljs-attr">min</span>: <span class="hljs-keyword">this</span>.bounds.g.min,
+					<span class="hljs-attr">max</span>: <span class="hljs-keyword">this</span>.bounds.g.max
+				},
+				<span class="hljs-attr">b</span>: {
+					<span class="hljs-attr">min</span>: <span class="hljs-keyword">this</span>.bounds.b.min,
+					<span class="hljs-attr">max</span>: <span class="hljs-keyword">this</span>.bounds.b.max
+				}
+			});
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <h3 id="box-range-axis-">Box.range (axis)</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <p>Calculates the length of a given <code>axis</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		range: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">axis</span>) </span>{
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.bounds[axis].max - <span class="hljs-keyword">this</span>.bounds[axis].min;
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <h3 id="box-longestaxis-">Box.longestAxis ()</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>Finds the longest axis of this box.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		longestAxis: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+			<span class="hljs-keyword">var</span> r = <span class="hljs-keyword">this</span>.range(<span class="hljs-string">'r'</span>), g = <span class="hljs-keyword">this</span>.range(<span class="hljs-string">'g'</span>), b = <span class="hljs-keyword">this</span>.range(<span class="hljs-string">'b'</span>);
+
+			<span class="hljs-keyword">if</span> (r &gt;= g &amp;&amp; r &gt;= b) <span class="hljs-keyword">return</span> <span class="hljs-string">'r'</span>;
+			<span class="hljs-keyword">if</span> (g &gt;= r &amp;&amp; g &gt;= b) <span class="hljs-keyword">return</span> <span class="hljs-string">'g'</span>;
+			<span class="hljs-keyword">return</span> <span class="hljs-string">'b'</span>;
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <h3 id="box-color-force-">Box.color (force)</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p>Calculates the average color of all samples in this Box.
+If <code>force</code> is <code>true</code>, it will recalculate a memoized result.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		color: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">force</span>) </span>{
+			<span class="hljs-keyword">if</span> (!force &amp;&amp; <span class="hljs-keyword">this</span>.memo.color)
+				<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.memo.color;
+
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.memo.color = <span class="hljs-keyword">this</span>.histogram.average(<span class="hljs-keyword">this</span>.bounds);
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <h3 id="box-population-">Box.population ()</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>Counts and returns all samples contained in this Box.
+If <code>force</code> is <code>true</code>, it will recalculate a memoized result.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		population: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">force</span>) </span>{
+			<span class="hljs-keyword">if</span> (!force &amp;&amp; <span class="hljs-keyword">this</span>.memo.populace)
+				<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.memo.populace;
+
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.memo.populace = <span class="hljs-keyword">this</span>.histogram.population(<span class="hljs-keyword">this</span>.bounds);
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <h3 id="box-volume-">Box.volume ()</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <p>Calculates the volume of this Box.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		volume: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.range(<span class="hljs-string">'r'</span>) * <span class="hljs-keyword">this</span>.range(<span class="hljs-string">'g'</span>) * <span class="hljs-keyword">this</span>.range(<span class="hljs-string">'b'</span>);
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <h3 id="box-trim-">Box.trim ()</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <p>Trims the Box so it’s as small as it can be while containing its colors.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		trim: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+			<span class="hljs-keyword">this</span>.bounds = <span class="hljs-keyword">this</span>.histogram.trim(<span class="hljs-keyword">this</span>.bounds);
+			<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>;
+		},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <h3 id="box-split-">Box.split ()</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <p>Splits this box by the <code>Quantize</code>-specified cut type.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		split: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+			<span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.population() == <span class="hljs-number">1</span>)
+				<span class="hljs-keyword">return</span> [<span class="hljs-keyword">this</span>];
+
+			<span class="hljs-keyword">var</span> histogram = <span class="hljs-keyword">this</span>.histogram,
+				bounds = <span class="hljs-keyword">this</span>.bounds,
+				settings = <span class="hljs-keyword">this</span>.quantize.settings;
+
+			<span class="hljs-keyword">var</span> axis = <span class="hljs-keyword">this</span>.longestAxis(),
+				splitPoint;
+
+			<span class="hljs-keyword">if</span> (settings.cutType == CutType.Volume) {
+				splitPoint = bounds[axis].min + ~~(<span class="hljs-keyword">this</span>.range(axis) / <span class="hljs-number">2</span>) - <span class="hljs-number">1</span>;
+			} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (settings.cutType == CutType.Median ||
+				settings.cutType == CutType.ModifiedMedian) {
+				<span class="hljs-keyword">var</span> population = <span class="hljs-keyword">this</span>.population(),
+					sum = <span class="hljs-number">0</span>;
+
+				<span class="hljs-keyword">var</span> r = bounds.r,
+					g = bounds.g,
+					b = bounds.b,
+					i, j, k;
+
+				<span class="hljs-keyword">switch</span> (axis) {
+					<span class="hljs-keyword">case</span> <span class="hljs-string">'r'</span>:
+						<span class="hljs-keyword">for</span> (i = r.min; !splitPoint &amp;&amp; i &lt;= r.max; i++) {
+							<span class="hljs-keyword">for</span> (j = b.min; !splitPoint &amp;&amp; j &lt;= b.max; j++) {
+								<span class="hljs-keyword">for</span> (k = g.min; !splitPoint &amp;&amp; k &lt;= g.max; k++) {
+									sum += histogram.data[histogram.index(i, k, j)] || <span class="hljs-number">0</span>;
+
+									<span class="hljs-keyword">if</span> (sum &gt;= population / <span class="hljs-number">2</span>)
+										splitPoint = i;
+								}
+							}
+						}
+						<span class="hljs-keyword">break</span>;
+					<span class="hljs-keyword">case</span> <span class="hljs-string">'g'</span>:
+						<span class="hljs-keyword">for</span> (i = g.min; !splitPoint &amp;&amp; i &lt;= g.max; i++) {
+							<span class="hljs-keyword">for</span> (j = b.min; !splitPoint &amp;&amp; j &lt;= b.max; j++) {
+								<span class="hljs-keyword">for</span> (k = r.min; !splitPoint &amp;&amp; k &lt;= r.max; k++) {
+									sum += histogram.data[histogram.index(k, i, j)] || <span class="hljs-number">0</span>;
+
+									<span class="hljs-keyword">if</span> (sum &gt;= population / <span class="hljs-number">2</span>)
+										splitPoint = i;
+								}
+							}
+						}
+						<span class="hljs-keyword">break</span>;
+					<span class="hljs-keyword">case</span> <span class="hljs-string">'b'</span>:
+						<span class="hljs-keyword">for</span> (i = b.min; !splitPoint &amp;&amp; i &lt;= b.max; i++) {
+							<span class="hljs-keyword">for</span> (j = g.min; !splitPoint &amp;&amp; j &lt;= g.max; j++) {
+								<span class="hljs-keyword">for</span> (k = r.min; !splitPoint &amp;&amp; k &lt;= r.max; k++) {
+									sum += histogram.data[histogram.index(k, j, i)] || <span class="hljs-number">0</span>;
+
+									<span class="hljs-keyword">if</span> (sum &gt;= population / <span class="hljs-number">2</span>)
+										splitPoint = i;
+								}
+							}
+						}
+						<span class="hljs-keyword">break</span>;
+				}
+
+				<span class="hljs-keyword">if</span> (settings.cutType == CutType.ModifiedMedian) {
+					<span class="hljs-keyword">var</span> left, right;
+
+					left = splitPoint - bounds[axis].min,
+						right = bounds[axis].max - splitPoint;
+
+					<span class="hljs-keyword">if</span> (left &lt;= right) {
+						splitPoint = <span class="hljs-built_in">Math</span>.min(
+							bounds[axis].max - <span class="hljs-number">1</span>, ~~(splitPoint + right / <span class="hljs-number">2</span>)
+						);
+					} <span class="hljs-keyword">else</span> {
+						splitPoint = <span class="hljs-built_in">Math</span>.max(
+							bounds[axis].min, ~~(splitPoint - <span class="hljs-number">1</span> - left / <span class="hljs-number">2</span>)
+						);
+					}
+				}
+			}
+
+			<span class="hljs-keyword">var</span> boxA = <span class="hljs-keyword">this</span>.clone(),
+				boxB = <span class="hljs-keyword">this</span>.clone();
+
+			boxA.bounds[axis].max = splitPoint;
+			boxB.bounds[axis].min = splitPoint + <span class="hljs-number">1</span>;
+
+			<span class="hljs-keyword">return</span> [boxA.trim(), boxB.trim()];
+		}
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <h3 id="quantize-gethistogram-image-">Quantize.getHistogram (image)</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-58">&#182;</a>
+              </div>
+              <p>Creates and populates a Histogram from the given Image.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	Quantize.prototype.getHistogram = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">image</span>) </span>{
+		<span class="hljs-keyword">var</span> histogram = <span class="hljs-keyword">new</span> Histogram(<span class="hljs-keyword">this</span>);
+
+		<span class="hljs-keyword">var</span> can, ctx, imageData;
+		can = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">"canvas"</span>);
+		can.width = image.width;
+		can.height = image.height;
+		ctx = can.getContext(<span class="hljs-string">"2d"</span>);
+		ctx.drawImage(image, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);
+		imageData = ctx.getImageData(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, image.width, image.height);
+		histogram.populate(imageData);
+
+		<span class="hljs-keyword">return</span> histogram;
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-59">&#182;</a>
+              </div>
+              <h3 id="quantize-getpalette-image-targetcolors-histogram-">Quantize.getPalette (image, targetColors, histogram)</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-60">&#182;</a>
+              </div>
+              <p>Finds a palette of size <code>targetColors</code> that approximates the colors of <code>image</code>.
+<code>histogram</code> is optional, if you already populated a Histogram with
+<code>Quantize.getHistogram</code> you can reuse it here.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	Quantize.prototype.getPalette = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">image, targetColors, histogram</span>) </span>{
+		targetColors = <span class="hljs-keyword">typeof</span> targetColors === <span class="hljs-string">"undefined"</span> ? <span class="hljs-number">4</span> : targetColors;
+
+		histogram = <span class="hljs-keyword">typeof</span> histogram === <span class="hljs-string">"undefined"</span> ? <span class="hljs-keyword">this</span>.getHistogram(image) : histogram;
+		<span class="hljs-keyword">var</span> boxes = [<span class="hljs-keyword">new</span> Box(<span class="hljs-keyword">this</span>, histogram)], box, split, lastComparitor;
+
+		<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">insert</span>(<span class="hljs-params">array, value, comparitor, i, tmp</span>) </span>{
+			array.push(value);
+			<span class="hljs-keyword">if</span> (array.length == <span class="hljs-number">1</span>) <span class="hljs-keyword">return</span>;
+			<span class="hljs-keyword">for</span> (i = array.length - <span class="hljs-number">1</span>; i &gt; <span class="hljs-number">0</span>; i--) {
+				tmp = array[i];
+				<span class="hljs-keyword">if</span> (comparitor(tmp, array[i - <span class="hljs-number">1</span>]) &lt; <span class="hljs-number">0</span>) {
+					array[i] = array[i - <span class="hljs-number">1</span>];
+					array[i - <span class="hljs-number">1</span>] = tmp;
+				}
+			}
+		}
+
+		<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">splitNextBox</span>(<span class="hljs-params">comparitor</span>) </span>{
+			<span class="hljs-keyword">if</span> (comparitor != lastComparitor)
+				boxes.sort(lastComparitor = comparitor);
+
+			<span class="hljs-keyword">var</span> box, split;
+			box = boxes.pop();
+
+			split = box.split();
+
+			<span class="hljs-keyword">while</span> (split.length)
+				insert(boxes, split.pop(), comparitor)
+		}
+
+		<span class="hljs-keyword">switch</span> (<span class="hljs-keyword">this</span>.settings.cutOrder) {
+			<span class="hljs-keyword">case</span> CutOrder.Leptonica:
+				<span class="hljs-keyword">while</span> (boxes.length &lt; targetColors * <span class="hljs-keyword">this</span>.settings.fractByPopulace)
+					splitNextBox(Comparitor.Population, <span class="hljs-literal">true</span>);
+
+				<span class="hljs-keyword">while</span> (boxes.length &lt; targetColors)
+					splitNextBox(Comparitor.PopulationVolume);
+				<span class="hljs-keyword">break</span>;
+			<span class="hljs-keyword">case</span> CutOrder.JFIF:
+				<span class="hljs-keyword">while</span> (boxes.length &lt; targetColors / <span class="hljs-number">2</span>)
+					splitNextBox(Comparitor.Population, <span class="hljs-literal">true</span>);
+
+				<span class="hljs-keyword">while</span> (boxes.length &lt; targetColors)
+					splitNextBox(Comparitor.Volume);
+				<span class="hljs-keyword">break</span>;
+			<span class="hljs-keyword">case</span> CutOrder.Subdivide:
+				<span class="hljs-keyword">while</span> (boxes.length &lt; targetColors) {
+					<span class="hljs-keyword">var</span> amount = boxes.length;
+					<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; amount; i++) {
+						split = boxes.shift().split();
+						<span class="hljs-keyword">while</span> (split.length)
+							boxes.push(split.shift());
+					}
+				}
+				<span class="hljs-keyword">break</span>;
+		}
+
+		boxes.sort(Comparitor.InversePopulation);
+
+		<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; boxes.length; i++)
+			boxes[i] = boxes[i].color();
+
+		<span class="hljs-keyword">return</span> boxes;
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-61">&#182;</a>
+              </div>
+              <h3 id="quantize-quantizeimage-image-targetcolors-">Quantize.quantizeImage (image, targetColors)</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-62">&#182;</a>
+              </div>
+              <p>Lazily quantizes an image. It’s not fast, as this isn’t actually what I
+wrote the library to do. I just wanted to extract pretty color palettes.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	Quantize.prototype.quantizeImage = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">image, targetColors</span>) </span>{
+		<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">difference</span> (<span class="hljs-params">a, b</span>) </span>{
+			<span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.abs(<span class="hljs-built_in">Math</span>.sqrt(
+				<span class="hljs-built_in">Math</span>.pow(b[<span class="hljs-number">0</span>] - a[<span class="hljs-number">0</span>], <span class="hljs-number">2</span>) +
+				<span class="hljs-built_in">Math</span>.pow(b[<span class="hljs-number">1</span>] - a[<span class="hljs-number">1</span>], <span class="hljs-number">2</span>) +
+				<span class="hljs-built_in">Math</span>.pow(b[<span class="hljs-number">2</span>] - a[<span class="hljs-number">2</span>], <span class="hljs-number">2</span>)
+			));
+		}
+
+		<span class="hljs-keyword">var</span> canvas, ctx, imageData, histogram, palette;
+		canvas = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">"canvas"</span>);
+		canvas.width = image.width;
+		canvas.height = image.height;
+
+		ctx = canvas.getContext(<span class="hljs-string">"2d"</span>);
+		ctx.drawImage(image, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);
+		imageData = ctx.getImageData(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, image.width, image.height);
+
+		histogram = <span class="hljs-keyword">new</span> Histogram(<span class="hljs-keyword">this</span>);
+		histogram.populate(imageData);
+		palette = <span class="hljs-keyword">this</span>.getPalette(image, targetColors, histogram);
+
+		<span class="hljs-keyword">var</span> i, j, pixel, distance, closestIndex, closestDistance;
+
+		<span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; imageData.data.length; i += <span class="hljs-number">4</span>) {
+			pixel = [imageData.data[i], imageData.data[i + <span class="hljs-number">1</span>], imageData.data[i + <span class="hljs-number">2</span>]]
+			closestIndex = <span class="hljs-number">0</span>;
+			closestDistance = <span class="hljs-number">256</span>;
+
+			<span class="hljs-keyword">for</span> (j = <span class="hljs-number">0</span>; j &lt; palette.length; j ++) {
+				distance = difference(pixel, palette[j]);
+				<span class="hljs-keyword">if</span> (distance &lt; closestDistance) {
+					closestDistance = distance;
+					closestIndex = j;
+				}
+			}
+
+			imageData.data[i] = palette[closestIndex][<span class="hljs-number">0</span>];
+			imageData.data[i + <span class="hljs-number">1</span>] = palette[closestIndex][<span class="hljs-number">1</span>];
+			imageData.data[i + <span class="hljs-number">2</span>] = palette[closestIndex][<span class="hljs-number">2</span>];
+		}
+
+		ctx.putImageData(imageData, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);
+		<span class="hljs-keyword">return</span> canvas.toDataURL(<span class="hljs-string">"image/png"</span>);
+	}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-63">&#182;</a>
+              </div>
+              <h3 id="quantize-getcolor-image-">Quantize.getColor (image)</h3>
+<hr>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-64">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-64">&#182;</a>
+              </div>
+              <p>Tries to find an images most dominant color, similar to Color Thief.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	Quantize.prototype.getColor = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">image</span>) </span>{
+		<span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.getPalette(image, <span class="hljs-number">5</span>).shift();
+	}
+
+	<span class="hljs-keyword">return</span> Quantize;
+})();</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
