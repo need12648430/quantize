@@ -12,14 +12,14 @@ with [Docco](https://jashkenas.github.io/docco/). It can be found
 ## Examples
 ### Find image's dominant color
 
-	var image = document.getElementById("#image");
+	var image = document.getElementById("inputImage");
 	var quantize = new Quantize();
 	var color = quantize.getColor(image);
 	// color = [R, G, B];
 
 ### Extract 8 colors from image
 
-	var image = document.getElementById("#image");
+	var image = document.getElementById("inputImage");
 	var quantize = new Quantize();
 	var colors = quantize.getPalette(image, 8);
 	// color = [[R, G, B], [R, G, B], ...];
