@@ -1,7 +1,7 @@
 // # Quantize
 // ----------------------------------------------------------------------------
-// Quantize is a tiny, but fast color quantization library; it's smaller, and
-// twice the speed of ColorThief (with more features, to boot) in Chrome.
+// Quantize is a tiny, but fast color quantization library; it's twice the speed
+// of ColorThief (with more features, to boot) in Chrome.
 
 /*
 Copyright (c) 2017 Jahn Johansen
